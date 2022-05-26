@@ -1,13 +1,55 @@
 import requests
+import pandas as pd
+import json
+from api_headers import headers
 
-headers = {
-    'Accept': 'application/json',
-    'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjFlN2I2ZjAyLTIwM2EtNDcwMy1iODAyLTA2OWUzMGQ4ZmZmMiIsImlhdCI6MTY1MzM5ODcwMSwic3ViIjoiZGV2ZWxvcGVyLzRlOGFmYmIzLWYzOTItY2YwNC1kYjE4LTQxZDYyNGY5MWQ0NyIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjk4LjU5LjExMy4yNyJdLCJ0eXBlIjoiY2xpZW50In1dfQ.YqWY4HQ_gkQLtrTxT28vOnjg19BVRTkJa2eVInFn_JyizjVod1JIsfNeifb5XAZaZCae79WYhHXetF6A3vBHEQ'
-}
+#clan_tag = 9VG8P90Q
+#player_tag = QVGGVC02
 
-def get_clan_info(clan_tag):
+# returns information regarding player info from the clan response (this only pulls player info that we cannot get from the player response)
+def get_player_info_from_clan(clan_tag):
     response = requests.get(
         'https://api.clashofclans.com/v1/clans/%23' + clan_tag, headers = headers)
-    player_info_json = response.json()
-    print(player_info_json)
-get_clan_info('9VG8P90Q')
+    json_response = response.json()
+    rows = []
+    for i in json_response['memberList']:
+        rows.append([i['tag'], i['clanRank'], i['previousClanRank']])
+    return(rows)
+
+df1 = pd.DataFrame(get_player_info_from_clan('9VG8P90Q'), columns = ["player_tag", "clan_rank", "previous_clan_rank"])
+print(df1)
+
+# returns information regarding player info from the player response
+def get_player_info(player_tag):
+    response = requests.get(
+        'https://api.clashofclans.com/v1/players/%23' + player_tag, headers = headers)
+    json_response = response.json()
+    rows = []
+    rows.append([json_response['tag'], json_response['name'], json_response['townHallLevel'], json_response['townHallWeaponLevel'],
+                 json_response['expLevel'], json_response['trophies'], json_response['bestTrophies'], json_response['warStars'],
+                 json_response['attackWins'], json_response['defenseWins'], json_response['builderHallLevel'], json_response['versusTrophies'],
+                 json_response['bestVersusTrophies'], json_response['versusBattleWins'], json_response['role'], json_response['warPreference'],
+                 json_response['donations'], json_response['donationsReceived'], json_response['clan']['tag'], json_response['clan']['name'],
+                 json_response['clan']['clanLevel'], json_response['league']['name']])
+    return(rows)
+
+df2 = pd.DataFrame(get_player_info('QVGGVC02'), columns = [
+    'player_tag', 'player_name', 'th_lvl', 'th_weapon_lvl', 'exp_lvl', 'trophies', 'best_trophies', 'war_stars',
+                                                           'attack_wins', 'defense_wins', 'bldr_hall_lvl', 'vs_trophies', 'best_vs_trophies', 'vs_battle_wins', 'role',
+                                                           'war_pref', 'donations', 'donations_rec', 'clan_tag', 'clan_name', 'clan_level', 'league_name'])
+print(df2)
+
+def get_player_troop_info(player_tag):
+    response = requests.get(
+        'https://api.clashofclans.com/v1/players/%23' + player_tag, headers = headers)
+    json_response = response.json()
+    rows = []
+    for i in json_response['troops']:
+        rows.append([json_response['tag'], i['name'], i['level'], i['maxLevel'], i['village']])
+
+    return(rows)
+
+df3 = pd.DataFrame(get_player_troop_info('QVGGVC02'), columns = [
+    'player_tag', 'troop_name', 'troop_lvl', 'max_lvl', 'village'
+])
+print(df3)
