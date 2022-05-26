@@ -39,6 +39,7 @@ df2 = pd.DataFrame(get_player_info('QVGGVC02'), columns = [
                                                            'war_pref', 'donations', 'donations_rec', 'clan_tag', 'clan_name', 'clan_level', 'league_name'])
 print(df2)
 
+# returns a players troop information with their corresponding player tag
 def get_player_troop_info(player_tag):
     response = requests.get(
         'https://api.clashofclans.com/v1/players/%23' + player_tag, headers = headers)
@@ -53,3 +54,10 @@ df3 = pd.DataFrame(get_player_troop_info('QVGGVC02'), columns = [
     'player_tag', 'troop_name', 'troop_lvl', 'max_lvl', 'village'
 ])
 print(df3)
+
+def get_all_clan_member_info(clan_tag):
+    '''
+    Grabs player information from the player response, but for every member in a given clan
+    :param clan_tag: a clan tag string
+    :return: A dataframe
+    '''
