@@ -70,6 +70,9 @@ def get_all_member_info(clan_tag):
 
     players = [get_player_info(i) for i in member_list]
     all_member_data_df = pd.DataFrame(players)
+
+    all_member_data_df['clan_name'] = np.repeat(json_response['name'], len(players))
+    all_member_data_df['clan_tag'] = np.repeat(json_response['tag'], len(players))
     return(all_member_data_df)
 
 print(get_all_member_info('9VG8P90Q'))
