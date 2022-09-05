@@ -1,3 +1,3 @@
-@echo off
+call conda activate ClashAnalytics
 python Module\api_calls.py
-pause
+call conda deactivate

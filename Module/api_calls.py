@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import os.path
-from Module.config import *
+from config import *
 
 clan_tags_dict = {
     'Invidia Bandit': '9VG8P90Q', 'Rob-Seb': '8Q0L9CRY', 'Vi11ageWarriors': 'LL2C8L8V', '#THE SHIELD#': 'PGPPQRLY',
@@ -66,7 +66,7 @@ def get_basic_member_info():
     all_member_data_df = pd.DataFrame(bmi_master)
     all_member_data_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(bmi_master))
 
-    print('Dumping to SQL and writing to Input path...')
+    print('Dumping to SQL and writing to Output path...')
     all_member_data_df.to_sql(
         name='basic_member_info',
         con=connection,
@@ -74,10 +74,10 @@ def get_basic_member_info():
         index=False
     )
 
-    if os.path.exists(f'Input/basic_member_info.csv'):
-        all_member_data_df.to_csv(f'Input/basic_member_info.csv', index=False, header=False, mode='a')
+    if os.path.exists(f'Output/basic_member_info.csv'):
+        all_member_data_df.to_csv(f'Output/basic_member_info.csv', index=False, header=False, mode='a')
     else:
-        all_member_data_df.to_csv(f'Input/basic_member_info.csv', index=False)
+        all_member_data_df.to_csv(f'Output/basic_member_info.csv', index=False)
 
     print('Successfully dumped all basic member info.')
 
@@ -151,11 +151,11 @@ def get_ls_member_info():
     print('Successfully pulled legend statistics info for all players in all clans.')
 
     ls_member_info_df = pd.DataFrame(ls_master).dropna(
-        subset=['legendTrophies', 'bestSeasonDate', 'bestSeasonRank', 'bestSeasonTrophies', 'previousSeasonDate',
-                'previousSeasonRank', 'previousSeasonTrophies', 'currentSeasonRank'], how='all')
+        subset=['legendTrophies', 'bestSeasonRank', 'bestSeasonTrophies', 'bestSeasonDate', 'previousSeasonRank',
+                'previousSeasonTrophies', 'currentSeasonRank', 'previousSeasonDate'], how='all')
     ls_member_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ls_member_info_df))
 
-    print('Dumping to SQL and writing to Input path...')
+    print('Dumping to SQL and writing to Output path...')
     ls_member_info_df.to_sql(
         name='ls_member_info',
         con=connection,
@@ -163,18 +163,79 @@ def get_ls_member_info():
         index=False
     )
 
-    if os.path.exists(f'Input/ls_member_info_df.csv'):
-        ls_member_info_df.to_csv(f'Input/ls_member_info_df.csv', index=False, header=False, mode='a')
+    if os.path.exists(f'Output/ls_member_info_df.csv'):
+        ls_member_info_df.to_csv(f'Output/ls_member_info_df.csv', index=False, header=False, mode='a')
     else:
-        ls_member_info_df.to_csv(f'Input/ls_member_info_df.csv', index=False)
+        ls_member_info_df.to_csv(f'Output/ls_member_info_df.csv', index=False)
 
     print('Successfully dumped legend statistics info.')
 
     return ls_member_info_df
 
+
+# def get_player_achievements(player_tag):
+#     response = requests.get(
+#         'https://api.clashofclans.com/v1/players/%23' + player_tag, headers=headers)
+#     json_response = response.json()
+#
+#     achievements_dict = json_response['achievements']
+#
+#     # needed to include the if statement to not overwrite clanName and clanTag with every iteration if clanName
+#     # and clanTag exist
+#     for i in achievements_dict:
+#         if 'clanName' and 'clanTag' not in i:
+#             i.update({'name': json_response['name'], 'tag': json_response['tag']})
+#
+#     achievements_df = pd.DataFrame(achievements_dict)
+#
+#     return achievements_dict
+#
+#
+# def get_member_achievements():
+#     print("Pulling achievement info...")
+#     ach_master = []
+#     for clan in clan_tags_dict.values():
+#         response = requests.get(
+#             'https://api.clashofclans.com/v1/clans/%23' + clan, headers=headers)
+#         json_response = response.json()
+#
+#         temp = []
+#         for i in json_response['memberList']:
+#             temp.append(i['tag'])
+#
+#         member_list = [i.replace('#', '') for i in temp]
+#
+#         ls = [get_player_achievements(i) for i in member_list]
+#         ach_master.extend(ls)
+#
+#         print('\tDone with ' + json_response['name'] + '...')
+#
+#     print('Successfully pulled achievement info for all players in all clans.')
+#
+#     ach_info_df = pd.DataFrame(ach_master)
+#     ach_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ach_info_df))
+#
+#     print('Dumping to SQL and writing to Output path...')
+#     ach_info_df.to_sql(
+#         name='ach_info_df',
+#         con=connection,
+#         if_exists='append',
+#         index=False
+#     )
+#
+#     if os.path.exists(f'Output/ach_info_df.csv'):
+#         ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False, header=False, mode='a')
+#     else:
+#         ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False)
+#
+#     print('Successfully dumped achievement info.')
+#
+#     return ach_info_df
+
 def main():
     get_basic_member_info()
-    get_ls_member_info()
+    # get_ls_member_info()
+
 
 if __name__ == '__main__':
     main()
