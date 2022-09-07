@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import os.path
-from config import *
+from Module.config import *
 
 clan_tags_dict = {
     'Invidia Bandit': '9VG8P90Q', 'Rob-Seb': '8Q0L9CRY', 'Vi11ageWarriors': 'LL2C8L8V', '#THE SHIELD#': 'PGPPQRLY',
@@ -11,29 +11,33 @@ clan_tags_dict = {
 
 
 def get_player_info(player_tag):
-    response = requests.get(
-        'https://api.clashofclans.com/v1/players/%23' + player_tag, headers=headers)
-    json_response = response.json()
+    try:
+        response = requests.get(
+            'https://api.clashofclans.com/v1/players/%23' + player_tag, headers=headers)
+        json_response = response.json()
 
-    breaking_list = ['clan', 'league', 'legendStatistics', 'achievements', 'versusBattleWinCount', 'labels', 'troops',
-                     'heroes', 'spells']
-    missing_col = ['townHallWeaponLevel', 'role', 'warPreference']
+        breaking_list = ['clan', 'league', 'legendStatistics', 'achievements', 'versusBattleWinCount', 'labels', 'troops',
+                         'heroes', 'spells']
+        missing_col = ['townHallWeaponLevel', 'role', 'warPreference']
 
-    player_dict = {}
-    for k, v in zip(json_response.keys(), json_response.values()):
-        if k in breaking_list:
-            break
-        player_dict.update({k: v})
-    if not any(i in missing_col for i in list(player_dict.keys())):
-        for i in missing_col:
-            player_dict.update({i: None})
-    if 'league' not in json_response:
-        player_dict.update({'league': None})
-    else:
-        player_dict.update({'league': json_response['league']['name']})
+        player_dict = {}
+        for k, v in zip(json_response.keys(), json_response.values()):
+            if k in breaking_list:
+                break
+            player_dict.update({k: v})
+        if not any(i in missing_col for i in list(player_dict.keys())):
+            for i in missing_col:
+                player_dict.update({i: None})
+        if 'league' not in json_response:
+            player_dict.update({'league': None})
+        else:
+            player_dict.update({'league': json_response['league']['name']})
 
-    player_df = pd.DataFrame(player_dict, index=[0])
-    return player_dict
+        player_df = pd.DataFrame(player_dict, index=[0])
+        return player_dict
+    except Exception as e:
+        print(e)
+
 
 
 def get_basic_member_info():
@@ -67,17 +71,18 @@ def get_basic_member_info():
     all_member_data_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(bmi_master))
 
     print('Dumping to SQL and writing to Output path...')
-    all_member_data_df.to_sql(
-        name='basic_member_info',
-        con=connection,
-        if_exists='append',
-        index=False
-    )
+    with engine.connect() as conn:
+        all_member_data_df.to_sql(
+            name='basic_member_info',
+            con=conn,
+            if_exists='replace',
+            index=False
+        )
 
-    if os.path.exists(f'Output/basic_member_info.csv'):
-        all_member_data_df.to_csv(f'Output/basic_member_info.csv', index=False, header=False, mode='a')
+    if os.path.exists(f'Module/Output/basic_member_info.csv'):
+        all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False, header=False, mode='a')
     else:
-        all_member_data_df.to_csv(f'Output/basic_member_info.csv', index=False)
+        all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False)
 
     print('Successfully dumped all basic member info.')
 
@@ -156,17 +161,18 @@ def get_ls_member_info():
     ls_member_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ls_member_info_df))
 
     print('Dumping to SQL and writing to Output path...')
-    ls_member_info_df.to_sql(
-        name='ls_member_info',
-        con=connection,
-        if_exists='append',
-        index=False
-    )
+    with engine.connect() as conn:
+        ls_member_info_df.to_sql(
+            name='ls_member_info',
+            con=conn,
+            if_exists='replace',
+            index=False
+        )
 
-    if os.path.exists(f'Output/ls_member_info_df.csv'):
-        ls_member_info_df.to_csv(f'Output/ls_member_info_df.csv', index=False, header=False, mode='a')
+    if os.path.exists(f'Module/Output/ls_member_info_df.csv'):
+        ls_member_info_df.to_csv(f'Module/Output/ls_member_info_df.csv', index=False, header=False, mode='a')
     else:
-        ls_member_info_df.to_csv(f'Output/ls_member_info_df.csv', index=False)
+        ls_member_info_df.to_csv(f'Module/Output/ls_member_info_df.csv', index=False)
 
     print('Successfully dumped legend statistics info.')
 
