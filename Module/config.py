@@ -6,7 +6,7 @@ headers = {
 }
 
 PG_STRING = 'postgresql://cristau:v2_3tqwa_4BFbYKkXsBBtc4WgiPntbTe@db.bit.io/cristau/clash-analytics'
-engine = create_engine(PG_STRING)
+engine = create_engine(PG_STRING, pool_pre_ping=True)
 connection = engine.connect()
 
 # BabyHood
