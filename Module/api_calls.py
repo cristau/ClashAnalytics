@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import os.path
-from Module.config import *
+from config import *
 
 clan_tags_dict = {
     'Invidia Bandit': '9VG8P90Q', 'Rob-Seb': '8Q0L9CRY', 'Vi11ageWarriors': 'LL2C8L8V', '#THE SHIELD#': 'PGPPQRLY',
@@ -70,7 +70,14 @@ def get_basic_member_info():
         all_member_data_df = pd.DataFrame(bmi_master)
         all_member_data_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(bmi_master))
 
-        print('Dumping to SQL and writing to Output path...')
+        print('Writing to Output path and dumping to SQL...')
+
+        if os.path.exists(f'Module/Output/basic_member_info.csv'):
+            all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False, header=False, mode='a')
+        else:
+            all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False)
+        print('Successfully wrote all basic member info to Output path.')
+
         with engine.connect() as conn:
             all_member_data_df.to_sql(
                 name='basic_member_info',
@@ -78,13 +85,7 @@ def get_basic_member_info():
                 if_exists='replace',
                 index=False
             )
-
-        if os.path.exists(f'Module/Output/basic_member_info.csv'):
-            all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False, header=False, mode='a')
-        else:
-            all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False)
-
-        print('Successfully dumped all basic member info.')
+        print('Successfully dumped all basic member info to SQL.')
 
         return all_member_data_df
     except Exception as e:
@@ -166,7 +167,14 @@ def get_ls_member_info():
                     'previousSeasonTrophies', 'currentSeasonRank', 'previousSeasonDate'], how='all')
         ls_member_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ls_member_info_df))
 
-        print('Dumping to SQL and writing to Output path...')
+        print('Writing to Output path and dumping to SQL...')
+
+        if os.path.exists(f'Module/Output/ls_member_info.csv'):
+            ls_member_info_df.to_csv(f'Module/Output/ls_member_info.csv', index=False, header=False, mode='a')
+        else:
+            ls_member_info_df.to_csv(f'Module/Output/ls_member_info.csv', index=False)
+        print('Successfully wrote all basic member info to Output path.')
+
         with engine.connect() as conn:
             ls_member_info_df.to_sql(
                 name='ls_member_info',
@@ -174,13 +182,7 @@ def get_ls_member_info():
                 if_exists='replace',
                 index=False
             )
-
-        if os.path.exists(f'Module/Output/ls_member_info.csv'):
-            ls_member_info_df.to_csv(f'Module/Output/ls_member_info.csv', index=False, header=False, mode='a')
-        else:
-            ls_member_info_df.to_csv(f'Module/Output/ls_member_info.csv', index=False)
-
-        print('Successfully dumped legend statistics info.')
+        print('Successfully dumped legend statistics info to SQL.')
 
         return ls_member_info_df
     except Exception as e:
