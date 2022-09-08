@@ -5,10 +5,6 @@ import time
 import os.path
 from config import *
 
-clan_tags_dict = {
-    'Invidia Bandit': '9VG8P90Q', 'Rob-Seb': '8Q0L9CRY', 'Vi11ageWarriors': 'LL2C8L8V', '#THE SHIELD#': 'PGPPQRLY',
-    'Immortal Rising': '28Q99QL0Q', 'No Mercy': 'LLJCVJQL', 'Indian Prestige': 'PQJUJCPL'}
-
 
 def get_player_info(player_tag):
     try:
