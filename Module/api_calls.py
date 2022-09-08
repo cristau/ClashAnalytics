@@ -72,17 +72,17 @@ def get_basic_member_info():
 
         print('Writing to Output path and dumping to SQL...')
 
-        if os.path.exists(f'Module/Output/basic_member_info.csv'):
-            all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False, header=False, mode='a')
+        if os.path.exists(f'Output/basic_member_info.csv'):
+            all_member_data_df.to_csv(f'Output/basic_member_info.csv', index=False, header=False, mode='a')
         else:
-            all_member_data_df.to_csv(f'Module/Output/basic_member_info.csv', index=False)
+            all_member_data_df.to_csv(f'Output/basic_member_info.csv', index=False)
         print('Successfully wrote all basic member info to Output path.')
 
         with engine.connect() as conn:
             all_member_data_df.to_sql(
                 name='basic_member_info',
                 con=conn,
-                if_exists='replace',
+                if_exists='append',
                 index=False
             )
         print('Successfully dumped all basic member info to SQL.')
@@ -169,17 +169,17 @@ def get_ls_member_info():
 
         print('Writing to Output path and dumping to SQL...')
 
-        if os.path.exists(f'Module/Output/ls_member_info.csv'):
-            ls_member_info_df.to_csv(f'Module/Output/ls_member_info.csv', index=False, header=False, mode='a')
+        if os.path.exists(f'Output/ls_member_info.csv'):
+            ls_member_info_df.to_csv(f'Output/ls_member_info.csv', index=False, header=False, mode='a')
         else:
-            ls_member_info_df.to_csv(f'Module/Output/ls_member_info.csv', index=False)
+            ls_member_info_df.to_csv(f'Output/ls_member_info.csv', index=False)
         print('Successfully wrote all basic member info to Output path.')
 
         with engine.connect() as conn:
             ls_member_info_df.to_sql(
                 name='ls_member_info',
                 con=conn,
-                if_exists='replace',
+                if_exists='append',
                 index=False
             )
         print('Successfully dumped legend statistics info to SQL.')
