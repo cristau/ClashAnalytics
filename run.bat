@@ -1,4 +1,4 @@
 call conda activate clashAnalytics
-python Module\api_calls.py
+python api_calls.py
 pause
 call conda deactivate
