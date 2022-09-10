@@ -102,65 +102,6 @@ def get_ls_member_info():
     except Exception as e:
         print(e)
 
-# def get_player_achievements(player_tag):
-#     response = requests.get(
-#         'https://api.clashofclans.com/v1/players/%23' + player_tag, headers=headers)
-#     json_response = response.json()
-#
-#     achievements_dict = json_response['achievements']
-#
-#     # needed to include the if statement to not overwrite clanName and clanTag with every iteration if clanName
-#     # and clanTag exist
-#     for i in achievements_dict:
-#         if 'clanName' and 'clanTag' not in i:
-#             i.update({'name': json_response['name'], 'tag': json_response['tag']})
-#
-#     achievements_df = pd.DataFrame(achievements_dict)
-#
-#     return achievements_dict
-#
-#
-# def get_member_achievements():
-#     print("Pulling achievement info...")
-#     ach_master = []
-#     for clan in clan_tags_dict.values():
-#         response = requests.get(
-#             'https://api.clashofclans.com/v1/clans/%23' + clan, headers=headers)
-#         json_response = response.json()
-#
-#         temp = []
-#         for i in json_response['memberList']:
-#             temp.append(i['tag'])
-#
-#         member_list = [i.replace('#', '') for i in temp]
-#
-#         ls = [get_player_achievements(i) for i in member_list]
-#         ach_master.extend(ls)
-#
-#         print('\tDone with ' + json_response['name'] + '...')
-#
-#     print('Successfully pulled achievement info for all players in all clans.')
-#
-#     ach_info_df = pd.DataFrame(ach_master)
-#     ach_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ach_info_df))
-#
-#     print('Dumping to SQL and writing to Output path...')
-#     ach_info_df.to_sql(
-#         name='ach_info_df',
-#         con=connection,
-#         if_exists='append',
-#         index=False
-#     )
-#
-#     if os.path.exists(f'Output/ach_info_df.csv'):
-#         ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False, header=False, mode='a')
-#     else:
-#         ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False)
-#
-#     print('Successfully dumped achievement info.')
-#
-#     return ach_info_df
-
 
 def main():
     get_ls_member_info()
