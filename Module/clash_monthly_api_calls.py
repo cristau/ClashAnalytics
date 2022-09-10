@@ -7,73 +7,79 @@ from config import *
 
 
 def get_player_achievements(player_tag):
-    response = requests.get(
-        'https://api.clashofclans.com/v1/players/%23' + player_tag, headers=headers)
-    json_response = response.json()
+    try:
+        response = requests.get(
+            'https://api.clashofclans.com/v1/players/%23' + player_tag, headers=headers)
+        json_response = response.json()
 
-    achievements_dict = json_response['achievements']
+        achievements_dict = json_response['achievements']
 
-    for i in achievements_dict:
-        i.update({'playerName': json_response['name'], 'tag': json_response['tag']})
-
-    if 'clan' in json_response:
         for i in achievements_dict:
-            i.update({'clanName': json_response['clan']['name'], 'clanTag': json_response['clan']['tag']})
-    if 'clan' not in json_response:
-        for i in achievements_dict:
-            i.update({'clanName': None, 'clanTag': None})
+            i.update({'playerName': json_response['name'], 'tag': json_response['tag']})
 
-    achievements_df = pd.DataFrame(achievements_dict)
+        if 'clan' in json_response:
+            for i in achievements_dict:
+                i.update({'clanName': json_response['clan']['name'], 'clanTag': json_response['clan']['tag']})
+        if 'clan' not in json_response:
+            for i in achievements_dict:
+                i.update({'clanName': None, 'clanTag': None})
 
-    return achievements_dict
+        achievements_df = pd.DataFrame(achievements_dict)
+
+        return achievements_dict
+    except Exception as e:
+        print(e)
 
 
 def get_member_ach_info():
-    print("Pulling achievement info...")
-    ach_master = []
-    for clan in clan_tags_dict.values():
-        response = requests.get(
-            'https://api.clashofclans.com/v1/clans/%23' + clan, headers=headers)
-        json_response = response.json()
+    try:
+        print("Pulling achievement info...")
+        ach_master = []
+        for clan in clan_tags_dict.values():
+            response = requests.get(
+                'https://api.clashofclans.com/v1/clans/%23' + clan, headers=headers)
+            json_response = response.json()
 
-        temp = []
-        for i in json_response['memberList']:
-            temp.append(i['tag'])
+            temp = []
+            for i in json_response['memberList']:
+                temp.append(i['tag'])
 
-        member_list = [i.replace('#', '') for i in temp]
+            member_list = [i.replace('#', '') for i in temp]
 
-        ls = [get_player_achievements(i) for i in member_list]
-        ach_master.extend(ls)
+            ls = [get_player_achievements(i) for i in member_list]
+            ach_master.extend(ls)
 
-        print('\tDone with ' + json_response['name'] + '...')
+            print('\tDone with ' + json_response['name'] + '...')
 
-    print('Successfully pulled achievement info for all players in all clans.')
+        print('Successfully pulled achievement info for all players in all clans.')
 
-    all_dfs = []
-    for i in ach_master:
-        df = pd.DataFrame(i)
-        all_dfs.append(df)
+        all_dfs = []
+        for i in ach_master:
+            df = pd.DataFrame(i)
+            all_dfs.append(df)
 
-    ach_info_df = pd.concat(all_dfs)
-    ach_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ach_info_df))
+        ach_info_df = pd.concat(all_dfs)
+        ach_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ach_info_df))
 
-    print('Dumping to SQL and writing to Output path...')
-    with engine.connect() as conn:
-        ach_info_df.to_sql(
-            name='ach_member_info',
-            con=conn,
-            if_exists='append',
-            index=False
-        )
+        print('Dumping to SQL and writing to Output path...')
+        with engine.connect() as conn:
+            ach_info_df.to_sql(
+                name='ach_member_info',
+                con=conn,
+                if_exists='append',
+                index=False
+            )
 
-    if os.path.exists(f'Output/ach_info_df.csv'):
-        ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False, header=False, mode='a')
-    else:
-        ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False)
+        if os.path.exists(f'Output/ach_info_df.csv'):
+            ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False, header=False, mode='a')
+        else:
+            ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False)
 
-    print('Successfully dumped achievement info.')
+        print('Successfully dumped achievement info.')
 
-    return ach_info_df
+        return ach_info_df
+    except Exception as e:
+        print(e)
 
 
 def main():
