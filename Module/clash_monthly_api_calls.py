@@ -13,6 +13,9 @@ def get_player_achievements(player_tag):
 
     achievements_dict = json_response['achievements']
 
+    for i in achievements_dict:
+        i.update({'playerName': json_response['name'], 'tag': json_response['tag']})
+
     if 'clan' in json_response:
         for i in achievements_dict:
             i.update({'clanName': json_response['clan']['name'], 'clanTag': json_response['clan']['tag']})
@@ -55,12 +58,13 @@ def get_member_ach_info():
     ach_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ach_info_df))
 
     print('Dumping to SQL and writing to Output path...')
-    ach_info_df.to_sql(
-        name='ach_member_info',
-        con=connection,
-        if_exists='append',
-        index=False
-    )
+    with engine.connect() as conn:
+        ach_info_df.to_sql(
+            name='ach_member_info',
+            con=conn,
+            if_exists='replace',
+            index=False
+        )
 
     if os.path.exists(f'Output/ach_info_df.csv'):
         ach_info_df.to_csv(f'Output/ach_info_df.csv', index=False, header=False, mode='a')
