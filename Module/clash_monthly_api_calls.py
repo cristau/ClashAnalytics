@@ -46,8 +46,8 @@ def get_member_ach_info():
 
             member_list = [i.replace('#', '') for i in temp]
 
-            ls = [get_player_achievements(i) for i in member_list]
-            ach_master.extend(ls)
+            ach = [get_player_achievements(i) for i in member_list]
+            ach_master.extend(ach)
 
             print('\tDone with ' + json_response['name'] + '...')
 
