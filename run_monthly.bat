@@ -1,0 +1,3 @@
+call conda activate clashAnalytics
+python clash_monthly_api_calls.py
+call conda deactivate
