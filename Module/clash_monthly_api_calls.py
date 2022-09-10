@@ -58,7 +58,7 @@ def get_member_ach_info():
     ach_info_df.to_sql(
         name='ach_member_info',
         con=connection,
-        if_exists='replace',
+        if_exists='append',
         index=False
     )
 
