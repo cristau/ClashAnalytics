@@ -80,6 +80,7 @@ def get_ls_member_info():
             subset=['legendTrophies', 'bestSeasonRank', 'bestSeasonTrophies', 'bestSeasonDate', 'previousSeasonRank',
                     'previousSeasonTrophies', 'currentSeasonRank', 'previousSeasonDate'], how='all')
         ls_member_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ls_member_info_df))
+        ls_member_info_df.columns = ls_member_info_df.columns.str.lower()
 
         print('Writing to Output path and dumping to SQL...')
 

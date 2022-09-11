@@ -60,6 +60,7 @@ def get_member_ach_info():
 
         ach_info_df = pd.concat(all_dfs)
         ach_info_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(ach_info_df))
+        ach_info_df.columns = ach_info_df.columns.str.lower()
 
         print('Dumping to SQL and writing to Output path...')
         with engine.connect() as conn:

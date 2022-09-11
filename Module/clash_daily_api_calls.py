@@ -65,6 +65,7 @@ def get_basic_member_info():
 
         all_member_data_df = pd.DataFrame(bmi_master)
         all_member_data_df['datePulled'] = np.repeat(time.strftime('%m-%d-%Y'), len(bmi_master))
+        all_member_data_df.columns = all_member_data_df.columns.str.lower()
 
         print('Writing to Output path and dumping to SQL...')
 
